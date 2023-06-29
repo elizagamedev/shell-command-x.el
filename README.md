@@ -65,3 +65,18 @@ displaying command buffers that have useful output.
    ;; etc...
    ))
 ```
+
+## Similar Packages
+
+- [shelldon.el](https://github.com/Overdr0ne/shelldon). Like `shell-command-x`,
+  `shelldon` gives buffers more meaningful names. `shelldon` also provides a
+  numbered history of each command run out of the box. However,
+  `shell-command-x` has a more configurable naming scheme and provides more
+  features. The two packages are theoretically compatible with one another.
+- [dwim-shell-command.el](https://github.com/xenodium/dwim-shell-command). This
+  package primarily adds extra templated arguments to shell commands, in
+  particular, when used with `dired`. It also provides its own take on whether
+  or not to display shell command buffers, using a combination of heuristics and
+  explicit user input. While the extra templating is a fantastic feature, its
+  focusing behavior conflicts with an ordinary `display-buffer-alist`-based
+  workflow. The two packages are theoretically compatible with one another.
