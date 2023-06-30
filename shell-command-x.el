@@ -3,7 +3,7 @@
 ;; Copyright (C) 2023  Eliza Velasquez
 
 ;; Author: Eliza Velasquez
-;; Version: 0.1.0
+;; Version: 0.1.1
 ;; Created: 2023-06-29
 ;; Package-Requires: ((emacs "28.1"))
 ;; Keywords: convenience processes unix
@@ -46,6 +46,7 @@
 
 ;;; Code:
 
+(require 'cl-lib)
 (require 'comint)
 (require 'shell)
 (require 'simple)
@@ -203,14 +204,39 @@ on this function's purpose.
 
 ORIG-FUN is `shell-command'.  Refer to `shell-command' for
 documentation on COMMAND, OUTPUT-BUFFER, and ARGS."
-  (if (and (not (string-equal "" command))
-           (not output-buffer))
-      (let ((shell-command-buffer-name
-             (funcall shell-command-x-buffer-name-function command nil))
-            (shell-command-buffer-name-async
-             (funcall shell-command-x-buffer-name-function command t)))
-        (apply orig-fun command output-buffer args))
-    (funcall orig-fun command output-buffer args)))
+
+  ;; HACK: If `async-shell-command-display-buffer' is nil, the later call to
+  ;; `display-buffer' doesn't respect `display-buffer-alist'.  Instead,
+  ;; replicate the vanilla behavior with the correct options.
+  (cl-letf* ((orig-display-buffer (symbol-function 'display-buffer))
+             ((symbol-function 'display-buffer)
+              (if async-shell-command-display-buffer
+                  ;; No change.
+                  orig-display-buffer
+                (lambda (buffer-or-name &rest _)
+                  ;; Instead of displaying the buffer, advise the process filter
+                  ;; to display the buffer later.
+                  (let ((proc (get-buffer-process buffer-or-name))
+                        (name (make-symbol "once")))
+                    (add-function
+                     :before (process-filter proc)
+                     (lambda (proc _string)
+                       (let ((buf (process-buffer proc)))
+                         (when (buffer-live-p buf)
+                           (remove-function (process-filter proc)
+                                            name)
+                           (funcall orig-display-buffer
+                                    buf '(nil (allow-no-window . t))))))
+                     `((name . ,name))))))))
+    (let ((async-shell-command-display-buffer t))
+      (if (and (not (string-equal "" command))
+               (not output-buffer))
+          (let ((shell-command-buffer-name
+                 (funcall shell-command-x-buffer-name-function command nil))
+                (shell-command-buffer-name-async
+                 (funcall shell-command-x-buffer-name-function command t)))
+            (apply orig-fun command output-buffer args))
+        (funcall orig-fun command output-buffer args)))))
 
 (defun shell-command-x--shell-command-sentinel-advice (process _)
   "Advice after `shell-command-sentinel' to watch for completion.
