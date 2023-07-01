@@ -3,7 +3,7 @@
 ;; Copyright (C) 2023  Eliza Velasquez
 
 ;; Author: Eliza Velasquez
-;; Version: 0.1.1
+;; Version: 0.1.2
 ;; Created: 2023-06-29
 ;; Package-Requires: ((emacs "28.1"))
 ;; Keywords: convenience processes unix
@@ -138,8 +138,8 @@ the COMMAND and ASYNC-P arguments."
                           command))
          (command-name (car (split-string-shell-command first-command))))
     (format-spec (if async-p
-                     shell-command-x-buffer-name-format
-                   shell-command-x-buffer-name-async-format)
+                     shell-command-x-buffer-name-async-format
+                   shell-command-x-buffer-name-format)
                  `((?n . ,command-name)
                    (?f . ,first-command)
                    (?a . ,command)))))
