@@ -80,3 +80,7 @@ displaying command buffers that have useful output.
   explicit user input. While the extra templating is a fantastic feature, its
   focusing behavior conflicts with an ordinary `display-buffer-alist`-based
   workflow. The two packages are theoretically compatible with one another.
+- [async-shell.el](https://github.com/sgpthomas/async-shell). In addition to the
+  special-mode like features, provides some additional features via a
+  transient-based interface. It operates separately from the built-in
+  `shell-command`, but all in all, it's very similar to shell-command-x.el.
