@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.3] - 2023-07-02
+
+### Fixed
+
+- Fixed error which occurred when killing shell command buffers before their
+  processes completed.
+
 ## [0.1.2] - 2023-06-30
 
 ### Fixed
@@ -29,7 +36,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - Initial release.
 
-[unreleased]: https://github.com/elizagamedev/shell-command-x.el/compare/v0.1.2...HEAD
+[unreleased]: https://github.com/elizagamedev/shell-command-x.el/compare/v0.1.3...HEAD
+[0.1.3]: https://github.com/elizagamedev/shell-command-x.el/compare/v0.1.2...v0.1.3
 [0.1.2]: https://github.com/elizagamedev/shell-command-x.el/compare/v0.1.1...v0.1.2
 [0.1.1]: https://github.com/elizagamedev/shell-command-x.el/compare/v0.1.0...v0.1.1
 [0.1.0]: https://github.com/elizagamedev/shell-command-x.el/releases/tag/v0.1.0

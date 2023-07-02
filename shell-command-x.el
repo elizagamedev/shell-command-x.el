@@ -3,7 +3,7 @@
 ;; Copyright (C) 2023  Eliza Velasquez
 
 ;; Author: Eliza Velasquez
-;; Version: 0.1.2
+;; Version: 0.1.3
 ;; Created: 2023-06-29
 ;; Package-Requires: ((emacs "28.1"))
 ;; Keywords: convenience processes unix
@@ -41,7 +41,7 @@
 ;;   output buffer if the command wasn't interactive; this is useful for paging
 ;;   through the output of commands like `grep --help'.
 ;;
-;; Refer to the included README.md for a more detailed overview, examples, and
+;; Refer to the project homepage for a slightly more detailed overview and usage
 ;; tips.
 
 ;;; Code:
@@ -108,7 +108,8 @@ can use as hooks here:
   `special-mode' when a shell command completes.
 
 `current-buffer' will be set to the shell command's process
-buffer when executing hooks."
+buffer when executing hooks.  Note that if the buffer is killed,
+these hooks will not run."
   :type 'hook
   :group 'shell-command-x)
 
@@ -205,9 +206,13 @@ on this function's purpose.
 ORIG-FUN is `shell-command'.  Refer to `shell-command' for
 documentation on COMMAND, OUTPUT-BUFFER, and ARGS."
 
-  ;; HACK: If `async-shell-command-display-buffer' is nil, the later call to
-  ;; `display-buffer' doesn't respect `display-buffer-alist'.  Instead,
-  ;; replicate the vanilla behavior with the correct options.
+  ;; HACK: Due to a bug in Emacs 29 and below, if
+  ;; `async-shell-command-display-buffer' is nil, the later call to
+  ;; `display-buffer' in the process filter doesn't include the alist argument
+  ;; `allow-no-window', meaning that user customizations in
+  ;; `display-buffer-alist' to suppress display of the buffer will fail.  The
+  ;; below code works around this bug by emulating the default behavior, but
+  ;; with the correct arguments to `display-buffer'.
   (cl-letf* ((orig-display-buffer (symbol-function 'display-buffer))
              ((symbol-function 'display-buffer)
               (if async-shell-command-display-buffer
@@ -246,8 +251,10 @@ function's purpose.
 
 Refer to `set-process-sentinel' for information on PROCESS."
   (when (memq (process-status process) '(exit signal))
-    (with-current-buffer (process-buffer process)
-      (run-hooks 'shell-command-x-exit-hook))))
+    (let ((buf (process-buffer process)))
+      (when (buffer-live-p buf)
+        (with-current-buffer buf
+          (run-hooks 'shell-command-x-exit-hook))))))
 
 (defun shell-command-x--comint-send-advice (&rest _)
   "Advice before `comint-send-input' and `comint-send-invisible'.
