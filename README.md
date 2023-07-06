@@ -22,16 +22,11 @@ features are:
 
 ## Installation
 
-This package is not yet available on M?ELPA. In the meantime, you can use
-something like [straight.el](https://github.com/radian-software/straight.el) or
-[elpaca.el](https://github.com/progfolio/elpaca). Here is an example with
-[use-package.el](https://github.com/jwiegley/use-package):
+This package is available on [MELPA](https://melpa.org/#/shell-command-x).
+Simply activate `shell-command-x-mode` in your configuration after installing.
 
 ```elisp
-(use-package shell-command-x
-  :elpaca (:host github :repo "elizagamedev/shell-command-x.el")
-  :init
-  (shell-command-x-mode 1))
+(shell-command-x-mode 1)
 ```
 
 ## Configuration
