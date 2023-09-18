@@ -241,7 +241,7 @@ documentation on COMMAND, OUTPUT-BUFFER, and ARGS."
                 (shell-command-buffer-name-async
                  (funcall shell-command-x-buffer-name-function command t)))
             (apply orig-fun command output-buffer args))
-        (funcall orig-fun command output-buffer args)))))
+        (apply orig-fun command output-buffer args)))))
 
 (defun shell-command-x--shell-command-sentinel-advice (process _)
   "Advice after `shell-command-sentinel' to watch for completion.
