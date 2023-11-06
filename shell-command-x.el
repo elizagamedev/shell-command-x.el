@@ -132,6 +132,14 @@ based on the simple format string variables
 
 - \"%a\": The entire command line.
 
+- \"%d\": The value of `default-directory'
+
+- \"%D\": The abbreviated form of `default-directory' (see also
+  `abbreviate-file-name').
+
+- \"%p\": The name of the current project or the abbreviated
+  directory name.
+
 See `shell-command-x-buffer-name-function' for information about
 the COMMAND and ASYNC-P arguments."
   (let* ((first-command (if (string-match shell-command-regexp command)
@@ -143,7 +151,14 @@ the COMMAND and ASYNC-P arguments."
                    shell-command-x-buffer-name-format)
                  `((?n . ,command-name)
                    (?f . ,first-command)
-                   (?a . ,command)))))
+                   (?a . ,command)
+                   (?d . ,default-directory)
+                   (?D . ,(abbreviate-file-name default-directory))
+                   (?p . ,(if-let* ((project (project-current))
+                                    (name (and (fboundp 'project-name)
+                                               (project-name project))))
+                              name
+                            (abbreviate-file-name default-directory)))))))
 
 (defun shell-command-x-bob-exit-hook ()
   "Hook for `shell-command-x-exit-hook' to place point at beginning.
