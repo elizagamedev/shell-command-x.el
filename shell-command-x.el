@@ -236,8 +236,8 @@ documentation on COMMAND, OUTPUT-BUFFER, and ARGS."
                 (lambda (buffer-or-name &rest _)
                   ;; Instead of displaying the buffer, advise the process filter
                   ;; to display the buffer later.
-                  (let ((proc (get-buffer-process buffer-or-name))
-                        (name (make-symbol "once")))
+                  (when-let ((proc (get-buffer-process buffer-or-name))
+                             (name (make-symbol "once")))
                     (add-function
                      :before (process-filter proc)
                      (lambda (proc _string)
